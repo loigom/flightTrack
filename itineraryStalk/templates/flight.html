@@ -81,11 +81,7 @@
     {% if flight.eta_landing_ts %}
     <div class="row border-top">
         <div class="col">
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                role="progressbar" aria-valuenow="{{ flight.progress_bar_value }}" 
-                aria-valuemin="0" aria-valuemax="100" style="width: {{ flight.progress_bar_value }}%">{{ flight.progress_bar_value }}%</div>
-              </div>
+            {% include "progress_bar.html" %}
         </div>
     </div>
     {% endif %}
