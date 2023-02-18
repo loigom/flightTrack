@@ -112,16 +112,6 @@ class ItineraryFlight(models.Model):
         return self.status == self.LANDED
 
     @property
-    def takeoff_actual_datetime(self) -> datetime:
-        if self.actual_takeoff_ts:
-            return timezone.make_aware(datetime.fromtimestamp(self.actual_takeoff_ts))
-
-    @property
-    def landing_actual_datetime(self) -> datetime:
-        if self.actual_landed_ts:
-            return timezone.make_aware(datetime.fromtimestamp(self.actual_landed_ts))
-
-    @property
     def readable_eta(self) -> str:
         if self.status == self.LANDED:
             return "Landed!"
