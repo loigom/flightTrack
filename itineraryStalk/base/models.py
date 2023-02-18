@@ -75,36 +75,39 @@ class ItineraryFlight(models.Model):
         if self.status == self.LANDED:
             return
 
+        # TODO: backup icao's. aka: malta airlines or ryanairs? could be either
         try:
             flight = find_flight(self.plane_number, self.airline.icao)
         except Exception as e:
             print("Encountered exception when attempting to request flight.", e)
             return
 
-        if not flight:
-            return
-
         now = datetime.now().timestamp()
         self.last_updated_ts = int(now)
 
-        self.map_link = f"https://www.flightradar24.com/{self.plane_number}/{flight.id}"
+        if not flight:
+            if self.status == self.IN_FLIGHT and self.progress_bar_value >= 96:
+                self.status = self.LANDED
+                self.actual_landed_ts = now
+            else:
+                return
 
-        if flight.time_details["real"]["departure"]:
-            self.actual_takeoff_ts = flight.time_details["real"]["departure"]
-        if flight.time_details["real"]["arrival"]:
-            self.actual_landed_ts = flight.time_details["real"]["arrival"]
-        if flight.time_details['estimated']["arrival"]:
-            self.eta_landing_ts = flight.time_details['estimated']["arrival"]
+        if flight:
+            self.map_link = f"https://www.flightradar24.com/{self.plane_number}/{flight.id}"
 
-        if self.actual_landed_ts:
-            self.status = self.LANDED
-        elif self.actual_takeoff_ts:
-            self.status = self.IN_FLIGHT
+            if flight.time_details["real"]["departure"]:
+                self.actual_takeoff_ts = flight.time_details["real"]["departure"]
+            if flight.time_details["real"]["arrival"]:
+                self.actual_landed_ts = flight.time_details["real"]["arrival"]
+            if flight.time_details['estimated']["arrival"]:
+                self.eta_landing_ts = flight.time_details['estimated']["arrival"]
+
+            if self.actual_landed_ts:
+                self.status = self.LANDED
+            elif self.actual_takeoff_ts:
+                self.status = self.IN_FLIGHT
 
         self.save(force_update=True)
-
-        print(flight.time_details)
-        print(f"Updated {str(self)}")
 
         return self.status == self.LANDED
 
@@ -120,6 +123,9 @@ class ItineraryFlight(models.Model):
 
     @property
     def readable_eta(self) -> str:
+        if self.status == self.LANDED:
+            return "Landed!"
+
         now = datetime.now().timestamp()
         if self.eta_landing_ts and now < self.eta_landing_ts:
             seconds_until_land = int(self.eta_landing_ts - now)
@@ -137,13 +143,16 @@ class ItineraryFlight(models.Model):
         return f"{self.airline} {self.plane_number}"
 
     @property
-    def progress_bar_value(self) -> str:
+    def progress_bar_value(self) -> int:
+        if self.status == self.LANDED:
+            return 100
+
         if self.eta_landing_ts and self.actual_takeoff_ts:
             now = datetime.now().timestamp()
             total_seconds_in_flight = self.eta_landing_ts - self.actual_takeoff_ts
             seconds_in_flight = now - self.actual_takeoff_ts
             percentage = int(seconds_in_flight / total_seconds_in_flight * 100)
-            return str(percentage)
+            return percentage if percentage < 100 else 100
 
     def __str__(self) -> str:
         return f"[{self.itinerary}] {self.airline} {self.plane_number} ({self.number_in_itinerary})"
