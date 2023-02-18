@@ -123,8 +123,8 @@ class ItineraryFlight(models.Model):
         now = datetime.now().timestamp()
         if self.eta_landing_ts and now < self.eta_landing_ts:
             seconds_until_land = int(self.eta_landing_ts - now)
-            minutes_until_land = seconds_until_land // 60
-            hours_until_land = minutes_until_land // 60
+            minutes_until_land = seconds_until_land / 60
+            hours_until_land = minutes_until_land / 60
             return f"In {int(hours_until_land)} hours, {int(minutes_until_land % 60)} minutes"
 
     @property
@@ -135,6 +135,15 @@ class ItineraryFlight(models.Model):
     @property
     def full_name(self) -> str:
         return f"{self.airline} {self.plane_number}"
+
+    @property
+    def progress_bar_value(self) -> str:
+        if self.eta_landing_ts and self.actual_takeoff_ts:
+            now = datetime.now().timestamp()
+            total_seconds_in_flight = self.eta_landing_ts - self.actual_takeoff_ts
+            seconds_in_flight = now - self.actual_takeoff_ts
+            percentage = int(seconds_in_flight / total_seconds_in_flight * 100)
+            return str(percentage)
 
     def __str__(self) -> str:
         return f"[{self.itinerary}] {self.airline} {self.plane_number} ({self.number_in_itinerary})"
