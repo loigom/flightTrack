@@ -2,30 +2,38 @@ from django.db import models
 from django.utils import timezone
 from .flightradar import find_flight
 from datetime import datetime
+from typing import List
 
 
 class Itinerary(models.Model):
     name = models.TextField()
+    done = models.BooleanField(default=False)
 
     @property
-    def done(self) -> bool:
-        flights = ItineraryFlight.objects.filter(itinerary=self)
-        landed_flights = flights.filter(status=ItineraryFlight.LANDED)
-        return len(flights) == len(landed_flights)
+    def unfinished_flights(self) -> List["ItineraryFlight"]:
+        return [flight for flight in self.flights if flight.status != ItineraryFlight.LANDED]
+
+    @property
+    def flights(self) -> List["ItineraryFlight"]:
+        return ItineraryFlight.objects.filter(itinerary=self).order_by("number_in_itinerary")
+    
+    def update(self) -> None:
+        now = timezone.now()
+        unfinished_flights = self.unfinished_flights
+        for flight in unfinished_flights:
+            if flight.scheduled_takeoff <= now:
+                flight_completed = flight.update()
+                if flight_completed and len(unfinished_flights) == 1:
+                    self.done = True
+                    self.save(force_update=True)
+
+    def __str__(self) -> str:
+        return self.name
 
     @staticmethod
     def update_itineraries() -> None:
         for itinerary in Itinerary.objects.all():
-            now = timezone.now()
-            if not itinerary.done:
-                flights = ItineraryFlight.objects.filter(itinerary=itinerary).order_by("number_in_itinerary")
-                for flight in flights:
-                    if flight.status != ItineraryFlight.LANDED and flight.scheduled_takeoff <= now:
-                        flight.update()
-                        break
-
-    def __str__(self) -> str:
-        return self.name
+            itinerary.update()
 
 class Airline(models.Model):
     name = models.TextField()
@@ -35,16 +43,8 @@ class Airline(models.Model):
         return self.name
 
 class ItineraryFlight(models.Model):
-    ADMIN_EXCLUDED = (
-        "actual_takeoff_ts",
-        "actual_landed_ts",
-        "status",
-        "last_updated_ts",
-        "map_link"
-    )
-
-    itinerary = models.ForeignKey(Itinerary, on_delete=models.PROTECT)
-    airline = models.ForeignKey(Airline, on_delete=models.PROTECT)
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    airline = models.ForeignKey(Airline, on_delete=models.CASCADE)
     number_in_itinerary = models.IntegerField()
     plane_number = models.TextField()
     scheduled_takeoff = models.DateTimeField()
@@ -67,7 +67,9 @@ class ItineraryFlight(models.Model):
     status = models.TextField(choices=STATUSES, default=NOT_DEPARTED)
     map_link = models.URLField(null=True, blank=True)
 
-    def update(self) -> None:
+    def update(self) -> bool:
+        print(f"Updating {str(self)}")
+
         if self.status == self.LANDED:
             return
 
@@ -96,6 +98,10 @@ class ItineraryFlight(models.Model):
             self.status = self.IN_FLIGHT
 
         self.save(force_update=True)
+
+        print(f"Updated {str(self)}")
+
+        return self.status == self.LANDED
 
     def __str__(self) -> str:
         return f"[{self.itinerary}] {self.airline} {self.plane_number} ({self.number_in_itinerary})"

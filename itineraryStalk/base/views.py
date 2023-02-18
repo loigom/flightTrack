@@ -25,4 +25,4 @@ ctx = {
 
 def home(request):
     Itinerary.update_itineraries()
-    return render(request, 'home.html', {"itineraries": itineraries})
+    return render(request, 'home.html')
