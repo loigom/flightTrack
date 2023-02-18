@@ -1,0 +1,5 @@
+<h3>{{ itinerary.name }}</h3>
+{% for flight in itinerary.flights %}
+    {% include "flight.html" %}
+{% endfor %}
+<br>

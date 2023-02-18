@@ -47,6 +47,8 @@ class ItineraryFlight(models.Model):
     airline = models.ForeignKey(Airline, on_delete=models.CASCADE)
     number_in_itinerary = models.IntegerField()
     plane_number = models.TextField()
+    departing_location = models.TextField()
+    arriving_location = models.TextField()
     scheduled_takeoff = models.DateTimeField()
     scheduled_landing = models.DateTimeField()
 
@@ -91,6 +93,8 @@ class ItineraryFlight(models.Model):
             self.actual_takeoff_ts = flight.time_details["real"]["departure"]
         if flight.time_details["real"]["arrival"]:
             self.actual_landed_ts = flight.time_details["real"]["arrival"]
+        if flight.time_details['estimated']["arrival"]:
+            self.eta_landing_ts = flight.time_details['estimated']["arrival"]
 
         if self.actual_landed_ts:
             self.status = self.LANDED
@@ -99,9 +103,38 @@ class ItineraryFlight(models.Model):
 
         self.save(force_update=True)
 
+        print(flight.time_details)
         print(f"Updated {str(self)}")
 
         return self.status == self.LANDED
+
+    @property
+    def takeoff_actual_datetime(self) -> datetime:
+        if self.actual_takeoff_ts:
+            return timezone.make_aware(datetime.fromtimestamp(self.actual_takeoff_ts))
+
+    @property
+    def landing_actual_datetime(self) -> datetime:
+        if self.actual_landed_ts:
+            return timezone.make_aware(datetime.fromtimestamp(self.actual_landed_ts))
+
+    @property
+    def readable_eta(self) -> str:
+        now = datetime.now().timestamp()
+        if self.eta_landing_ts and now < self.eta_landing_ts:
+            seconds_until_land = int(self.eta_landing_ts - now)
+            minutes_until_land = seconds_until_land // 60
+            hours_until_land = minutes_until_land // 60
+            return f"In {int(hours_until_land)} hours, {int(minutes_until_land % 60)} minutes"
+
+    @property
+    def minutes_since_last_update(self) -> str:
+        if self.last_updated_ts:
+            return f"{int((datetime.now().timestamp() - self.last_updated_ts) / 60)} minutes ago"
+
+    @property
+    def full_name(self) -> str:
+        return f"{self.airline} {self.plane_number}"
 
     def __str__(self) -> str:
         return f"[{self.itinerary}] {self.airline} {self.plane_number} ({self.number_in_itinerary})"
