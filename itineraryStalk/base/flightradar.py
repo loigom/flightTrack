@@ -1,7 +1,7 @@
 from FlightRadar24.api import FlightRadar24API, Flight
 fr_api = FlightRadar24API()
 
-def find_flight(number: str, airline_icao: str = None) -> Flight:
+def find_flight(number: str, airline_icao: str) -> Flight:
     flights = fr_api.get_flights(airline_icao)
     for flight in flights:
         if flight.number == number:

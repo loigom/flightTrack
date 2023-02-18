@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Itinerary
 
 itineraries = [
     {
@@ -23,4 +24,5 @@ ctx = {
 
 
 def home(request):
+    Itinerary.update_itineraries()
     return render(request, 'home.html', {"itineraries": itineraries})
