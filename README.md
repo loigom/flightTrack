@@ -1,22 +1,5 @@
-# The idea
+Keeping tabs on someone's flight itinerary.
 
-Is to keep tabs on someone's flight progress.
+Helps keep track of times, current location, what is currently being flown, estimated times of arrival etc.
 
-Designed as a single-page web app.
-
-Editing, adding models happens in the admin page.
-
-# ERD
-
-Itinerary
-
-* Name
-
-Flight
-
-* Itinerary FK
-* Flight ID
-* Number
-* ETA (nullable)
-* Take-off time (nullable)
-* Landed (nullable)
+![example](https://i.imgur.com/GSSeajE.png)

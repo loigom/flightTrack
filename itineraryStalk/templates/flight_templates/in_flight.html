@@ -1,0 +1,17 @@
+<div class="container text-center border border-primary">
+
+    {% include "flight_templates/components/flight_nr.html" %}
+
+    {% include "flight_templates/components/path.html" %}
+
+    {% if flight.eta_landing_ts %}
+    {% include "progress_bar.html" %}
+    {% endif %}
+
+    {% include "flight_templates/components/flight_name.html" %}
+
+    {% include "flight_templates/components/status.html" %}
+    
+    {% include "flight_templates/components/link.html" %}
+
+</div>
