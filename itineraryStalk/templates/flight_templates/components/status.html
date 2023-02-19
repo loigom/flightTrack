@@ -1,9 +1,22 @@
 <div class="row">
     <div class="col">
+
         {% if flight.status == 'LANDED' %}
-        Status: <span class="text-success">{{ flight.status }}</span>
+
+        {% load tags %}
+        {% timestamp_to_aware_datetime flight.actual_landed_ts as landed_time %}
+        
+        Status: <span class="text-success">{{ flight.status }}
+                    <span class="text-danger">
+                        <span class="text-white">at</span>
+                    {{ landed_time }}
+                    </span>
+                </span>
+
         {% else %}
         Status: {{ flight.status|default:"N/A" }}
+
         {% endif %}
+
     </div>
 </div>
