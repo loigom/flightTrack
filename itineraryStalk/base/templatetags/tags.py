@@ -1,7 +1,8 @@
 # https://stackoverflow.com/questions/39021159/django-template-send-two-arguments-to-template-tag
 
 from django.utils import timezone
-from datetime import datetime
+from django.conf import settings
+from datetime import datetime, timedelta
 from django import template
 
 register = template.Library()
@@ -27,7 +28,17 @@ def progress_bar_value(flight) -> int:
 
 @register.simple_tag
 def progress_bar_classes(value: int) -> str:
-    print(value)
-    if value == "100":
-        return "progress-bar progress-bar-striped progress-bar-animated"
-    return "progress-bar progress-bar-striped bg-success"
+    if value == 100:
+        return "progress-bar progress-bar-striped bg-success"
+    return "progress-bar progress-bar-striped progress-bar-animated"
+
+
+@register.simple_tag
+def server_timezone_string() -> str:
+    return settings.TIME_ZONE
+
+
+@register.simple_tag
+def location_datetime_to_server_timezone(location, dtime) -> datetime:
+    dif = settings.UTC_OFFSET - location.timezone_utc_offset
+    return dtime + timedelta(hours=dif)

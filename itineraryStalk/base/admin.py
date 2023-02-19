@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Itinerary, ItineraryFlight, Airline
+from .models import Itinerary, ItineraryFlight, Airline, Location
 
 class ItineraryFlightAdmin(admin.ModelAdmin):
     exclude = (
@@ -13,7 +13,8 @@ class ItineraryFlightAdmin(admin.ModelAdmin):
 
 regular_models = (
     Itinerary,
-    Airline
+    Airline,
+    Location
 )
 
 admin.site.register(regular_models)

@@ -1,0 +1,41 @@
+{% load tags %}
+
+
+<div class="container text-center border border-primary">
+
+    <h5>Flight {{ flight.number_in_itinerary }} / {{ itineraries|length }}</h5>
+    <h6>{{ flight.departure_location.name }} -> {{ flight.arrival_location.name }}</h6>
+    {% if flight.eta_landing_ts %}
+    <div class="row">
+        <div class="col">
+            {% include "progress_bar.html" %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col">
+            {{ flight.full_name }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {% if flight.status == 'LANDED' %}
+            Status: <span class="text-success">{{ flight.status }}</span>
+            {% else %}
+            Status: {{ flight.status|default:"N/A" }}
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            {% if flight.map_link %}
+            <a href="{{ flight.map_link }}">Link to live map</a>
+            {% else %}
+            <p>The link to the live map will be here, once it's available</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

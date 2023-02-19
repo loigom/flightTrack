@@ -1,5 +1,15 @@
-<h3>{{ itinerary.name }}</h3>
+<h2>Itinerary: {{ itinerary.name }}</h2>
 {% for flight in itinerary.flights %}
+
+    {% if flight.status == flight.LANDED %}
+        {% include "flight_templates/landed.html" %}
+    {% elif flight.status == flight.NOT_DEPARTED %}
+        {% include "flight_templates/not_departed.html" %}
+    {% else %}
+        {% include "flight_templates/in_flight.html" %}
+    {% endif %}
+    <br>
     {% include "flight.html" %}
+    <br>
+
 {% endfor %}
-<br>
