@@ -14,6 +14,12 @@ def timestamp_to_aware_datetime(timestamp: int) -> datetime:
 
 
 @register.simple_tag
+def timestamp_to_location_datetime(timestamp: int, location) -> datetime:
+    print(timestamp)
+    return datetime.utcfromtimestamp(timestamp) + timedelta(hours=location.timezone_utc_offset)
+
+
+@register.simple_tag
 def progress_bar_value(flight) -> int:
     if flight.status == flight.LANDED:
         return 100

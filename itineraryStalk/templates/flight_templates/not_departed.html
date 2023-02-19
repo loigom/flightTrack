@@ -1,0 +1,21 @@
+{% extends 'flight_templates/base.html' %}
+
+{% block content %}
+
+{% load tags %}
+{% location_datetime_to_server_timezone flight.departure_location flight.scheduled_takeoff as takeoff_time %}
+{% location_datetime_to_server_timezone flight.arrival_location flight.scheduled_landing as landing_time %}
+
+<div class="row">
+    <div class="col">
+        Estimated departure: {{ flight.scheduled_takeoff }} / <span class="text-danger">{{ takeoff_time }}</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        Estimated arrival: {{ flight.scheduled_landing }} / <span class="text-danger">{{ landing_time }}</span>
+    </div>
+</div>
+
+{% endblock content %}

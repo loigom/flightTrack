@@ -13,8 +13,10 @@
     <body class="bg-dark text-white p-3">
 
         {% include "github.html" %}
+        
         <p>Data scraped from <a href="https://www.flightradar24.com/">FlightRadar24</a></p>
         <p>Note: times that are in <span class="text-danger">red</span> are {{ SERVER_TIMEZONE }} timezone-adjusted</p>
+        <p>Otherwise, times are local</p>
 
         {% for itinerary in itineraries %}
             {% include "itinerary.html" %}
