@@ -1,3 +1,6 @@
+{% load tags %}
+{% timestamp_to_aware_datetime flight.actual_takeoff_ts as takeoff_time %}
+
 <div class="container text-center border border-primary">
 
     {% include "flight_templates/components/flight_nr.html" %}
@@ -11,6 +14,18 @@
     {% include "flight_templates/components/flight_name.html" %}
 
     {% include "flight_templates/components/status.html" %}
+
+    <div class="row">
+        <div class="col">
+            ETA: {{ flight.readable_eta|default:"N/A (yet)" }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            Taken off at <span class="text-danger">{{ takeoff_time }}</span>
+        </div>
+    </div>
     
     {% include "flight_templates/components/link.html" %}
 
