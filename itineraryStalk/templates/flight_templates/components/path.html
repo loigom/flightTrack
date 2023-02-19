@@ -1,0 +1,6 @@
+{% load tags %}
+
+{% location_time_now flight.arrival_location as arrival_location_time %}
+
+<h6>{{ flight.departure_location.name }} -> {{ flight.arrival_location.name }}</h6>
+<h6>Time in {{ flight.arrival_location.name }}: {{ arrival_location_time }}</h6>

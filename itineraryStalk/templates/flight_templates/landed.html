@@ -5,27 +5,15 @@
 
     {% include "flight_templates/components/flight_nr.html" %}
 
-    <h6>{{ flight.departure_location.name }} -> {{ flight.arrival_location.name }}</h6>
-    
+    {% include "flight_templates/components/path.html" %}
+
     {% if flight.eta_landing_ts %}
     {% include "progress_bar.html" %}
     {% endif %}
 
-    <div class="row">
-        <div class="col">
-            {{ flight.full_name }}
-        </div>
-    </div>
+    {% include "flight_templates/components/flight_name.html" %}
 
-    <div class="row">
-        <div class="col">
-            {% if flight.status == 'LANDED' %}
-            Status: <span class="text-success">{{ flight.status }}</span>
-            {% else %}
-            Status: {{ flight.status|default:"N/A" }}
-            {% endif %}
-        </div>
-    </div>
+    {% include "flight_templates/components/status.html" %}
     
     {% include "flight_templates/components/link.html" %}
 

@@ -50,7 +50,7 @@ class Airline(models.Model):
 
 class Location(models.Model):
     name = models.TextField()
-    timezone_utc_offset = models.IntegerField()
+    timezone_utc_offset = models.FloatField(default=0)
 
     def __str__(self) -> str:
         return f"{self.name} [UTC{self.timezone_utc_offset}]"

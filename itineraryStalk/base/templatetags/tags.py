@@ -42,3 +42,8 @@ def server_timezone_string() -> str:
 def location_datetime_to_server_timezone(location, dtime) -> datetime:
     dif = settings.UTC_OFFSET - location.timezone_utc_offset
     return dtime + timedelta(hours=dif)
+
+
+@register.simple_tag
+def location_time_now(location) -> datetime:
+    return datetime.utcnow() + timedelta(hours=location.timezone_utc_offset)
