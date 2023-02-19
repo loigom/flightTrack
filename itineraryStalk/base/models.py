@@ -80,7 +80,9 @@ class ItineraryFlight(models.Model):
         (LANDED, "Landed")
     )
     status = models.TextField(choices=STATUSES, default=NOT_DEPARTED)
+
     map_link = models.URLField(null=True, blank=True)
+    history_link = models.URLField(null=True, blank=True)
 
     def update(self) -> bool:
         print(f"Updating {str(self)}")
@@ -107,6 +109,7 @@ class ItineraryFlight(models.Model):
 
         if flight:
             self.map_link = f"https://www.flightradar24.com/{self.plane_number}/{flight.id}"
+            self.history_link = f"https://www.flightradar24.com/data/aircraft/{flight.registration}/#{flight.id}"
 
             if flight.time_details["real"]["departure"]:
                 self.actual_takeoff_ts = flight.time_details["real"]["departure"]

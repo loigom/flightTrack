@@ -8,7 +8,8 @@ class ItineraryFlightAdmin(admin.ModelAdmin):
         "status",
         "last_updated_ts",
         "map_link",
-        "eta_landing_ts"
+        "eta_landing_ts",
+        "history_link"
     )
 
 regular_models = (

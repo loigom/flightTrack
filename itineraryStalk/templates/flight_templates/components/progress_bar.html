@@ -1,0 +1,16 @@
+{% load tags %}
+{% progress_bar_value flight as bar_value %}
+{% progress_bar_classes bar_value as classes %}
+
+<div class="row">
+    <div class="col">
+        <div class="progress">
+            
+            <div class="{{ classes }}" 
+            role="progressbar" aria-valuenow="{{ bar_value }}" 
+            aria-valuemin="0" aria-valuemax="100" style="width: {{ bar_value }}%">{{ bar_value }}%
+            </div>
+        
+        </div>
+    </div>
+</div>

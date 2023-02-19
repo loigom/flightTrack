@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col">
+
+        {% if flight.map_link and flight.status == flight.IN_FLIGHT %}
+        <a href="{{ flight.map_link }}">Link to live map</a>
+
+        {% elif flight.history_link and flight.status == flight.LANDED %}
+        <a href="{{ flight.history_link }}">Link to live map</a>
+
+        {% else %}
+        <p>The link to the live map will be here, once it's available</p>
+        
+        {% endif %}
+
+    </div>
+</div>
