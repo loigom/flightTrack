@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
-from .flightradar import find_flight
+from base.flightradar import find_flight
 from datetime import datetime, timedelta
 from typing import List
 from .templatetags.tags import progress_bar_value
